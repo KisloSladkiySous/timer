@@ -1,15 +1,14 @@
 <template>
   <button :class="buttonClasses" :type="type" :disabled="disabled" @click="handleClick">
-    <BaseIcon :icon="props.icon" v-if="props.icon" />
-    <template v-else>
-      {{ label }}
-    </template>
+    <!-- <BaseIcon :icon="props.icon" v-if="props.icon" /> -->
+
+    {{ label }}
   </button>
 </template>
 
 <script setup lang="ts">
 import { computed, defineProps, defineEmits } from 'vue'
-
+import type { ButtonHTMLAttributes } from 'vue'
 // Типизация пропсов
 type ButtonColor = 'primary' | 'secondary' | 'danger' | 'info' | 'success'
 type ButtonVariant = 'default' | 'outline' | 'ghost' | 'withIcon'
@@ -18,7 +17,7 @@ type ButtonVariant = 'default' | 'outline' | 'ghost' | 'withIcon'
 const props = withDefaults(
   defineProps<{
     label: string
-    type?: string
+    type?: ButtonHTMLAttributes['type']
     variant?: ButtonVariant
     color?: ButtonColor
     icon?: string | null
