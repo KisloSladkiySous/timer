@@ -1,60 +1,40 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import BaseButton from '@/core/components/BaseButton.vue'
-const interval = ref()
+import { ref, watch } from 'vue'
+import Card from 'primevue/card'
+import Button from 'primevue/button'
+import InputMask from 'primevue/inputmask'
 
-const timerInfo = ref({
-  start: 0,
-  duration: 0,
-  end: 0,
-})
+import { useTimerStore } from '@/modules/timer/store/useTimerStore'
+const { interval, stopTimer, startTimer, timerInfo } = useTimerStore()
 
-const startTimer = () => {
-  if (interval.value) {
-    pauseTimer()
-    return
-  }
+watch(
+  () => timerInfo.value.duration,
+  (duration) => {
+    getTimeFormatted(duration)
+  },
+  { deep: true },
+)
+const time = ref()
+const getTimeFormatted = (duration: number) => {
+  const hours = Math.floor(duration / 3600)
+  const minutes = Math.floor((duration % 3600) / 60)
+  const seconds = Math.floor(duration % 60)
+  time.value = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 
-  if (!timerInfo.value.start) {
-    timerInfo.value.start = Date.now()
-  }
-
-  // send startTime to server
-
-  interval.value = setInterval(() => {
-    timerInfo.value.duration += 1
-  }, 1_000)
+  // return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 }
-
-const pauseTimer = () => {
-  clearInterval(interval.value)
-  interval.value = null
-}
-
-const stopTimer = () => {
-  clearInterval(interval.value)
-  interval.value = null
-  timerInfo.value.duration = 0
-  timerInfo.value.end = Date.now()
-
-  // send deleteTime to server
-}
-
-const getTimeFormatted = computed(() => {
-  const hours = Math.floor(timerInfo.value.duration / 3600)
-  const minutes = Math.floor((timerInfo.value.duration % 3600) / 60)
-  const seconds = Math.floor(timerInfo.value.duration % 60)
-  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-})
 </script>
 
 <template>
-  <div
-    class="group flex rounded-md max-w-sm flex-col overflow-hidden border border-neutral-300 bg-neutral-50 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300"
-  >
-    <BaseButton :label="interval ? 'Stop' : 'Start'" @click="startTimer()" />
-    <BaseButton label="Remove" color="secondary" @click="stopTimer()" />
-
-    {{ getTimeFormatted }}
-  </div>
+  <Card>
+    <template #title>
+      <InputMask id="timer" type="text" mask="99:99:99" v-model="time" placeholder="00:00:00" />
+    </template>
+    <template #content>
+      <div class="flex justify-between">
+        <Button :label="interval ? 'Stop' : 'Start'" @click="startTimer()" />
+        <Button label="Remove" @click="stopTimer()" />
+      </div>
+    </template>
+  </Card>
 </template>

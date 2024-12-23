@@ -1,11 +1,27 @@
 <script setup lang="ts">
 import MainTimer from '@/modules/timer/components/MainTimer.vue'
+import Card from 'primevue/card'
+
+import { useTimerStore } from '@/modules/timer/store/useTimerStore'
+import { watch } from 'vue'
+const { timers } = useTimerStore()
+
+watch(timers, () => {
+  console.log(timers.value)
+})
 </script>
 
 <template>
-  <div
-    class="group flex rounded-md max-w-sm flex-col overflow-hidden border border-neutral-300 bg-neutral-50 text-neutral-600 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300"
-  >
-    <MainTimer />
+  <div class="flex justify-center items-center h-screen flex-col gap-4">
+    <Card v-for="timer in timers" :key="timer.start">
+      <template #title>
+        <MainTimer />
+      </template>
+      <template #content>
+        <p class="m-0">
+          {{ timer.start }}
+        </p>
+      </template>
+    </Card>
   </div>
 </template>
