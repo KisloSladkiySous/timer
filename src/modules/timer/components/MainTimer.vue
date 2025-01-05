@@ -5,10 +5,10 @@ import Button from 'primevue/button'
 import InputMask from 'primevue/inputmask'
 
 import { useTimerStore } from '@/modules/timer/store/useTimerStore'
-const { interval, stopTimer, startTimer, timerInfo } = useTimerStore()
+const { activeTimeEntry, stopTimer, startTimer } = useTimerStore()
 
 watch(
-  () => timerInfo.value.duration,
+  () => activeTimeEntry.value.duration,
   (duration) => {
     getTimeFormatted(duration)
   },
@@ -20,8 +20,6 @@ const getTimeFormatted = (duration: number) => {
   const minutes = Math.floor((duration % 3600) / 60)
   const seconds = Math.floor(duration % 60)
   time.value = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
-
-  // return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 }
 </script>
 
@@ -32,8 +30,8 @@ const getTimeFormatted = (duration: number) => {
     </template>
     <template #content>
       <div class="flex justify-between">
-        <Button :label="interval ? 'Stop' : 'Start'" @click="startTimer()" />
-        <Button label="Remove" @click="stopTimer()" />
+        <Button :label="activeTimeEntry.interval ? 'Pause' : 'Start'" @click="startTimer()" />
+        <Button label="Stop" @click="stopTimer()" />
       </div>
     </template>
   </Card>
