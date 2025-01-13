@@ -36,6 +36,7 @@ export function useTimerStore() {
       const newTimer = Object.create(timerBlueprint)
       newTimer.id = timers.value.length + 1
       newTimer.start = Date.now()
+      newTimer.title = `Таймер ${newTimer.id}`
       timers.value.unshift(newTimer)
     }
 
@@ -60,7 +61,8 @@ export function useTimerStore() {
   }
 
   const currentTimer = computed(() => {
-    return timers.value[0]
+    if (activeTimeEntry.value.duration || activeTimeEntry.value.interval) return timers.value[0]
+    return null
   })
 
   return { currentTimer, activeTimeEntry, timers, startTimer, pauseTimer, stopTimer }
