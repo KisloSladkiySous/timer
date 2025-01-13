@@ -4,6 +4,10 @@ import Card from 'primevue/card'
 import InputText from 'primevue/inputtext'
 import dayjs from 'dayjs'
 import { useTimerStore } from '@/modules/timer/store/useTimerStore'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import StickyTimer from './modules/timer/components/StickyTimer.vue'
+
 const { timers } = useTimerStore()
 
 const formatTime = (time?: number | string) => {
@@ -13,12 +17,16 @@ const formatTime = (time?: number | string) => {
 
 <template>
   <div class="flex justify-center items-center h-screen flex-col gap-4">
-    <Card>
-      <template #content>
-        <MainTimer />
-      </template>
-    </Card>
-    <template v-if="timers.length">
+    <MainTimer />
+    <div>
+      <DataTable tableStyle="min-width: 50rem">
+        <Column field="code" header="Code"></Column>
+        <Column field="name" header="Name"></Column>
+        <Column field="category" header="Category"></Column>
+        <Column field="quantity" header="Quantity"></Column>
+      </DataTable>
+    </div>
+    <div v-if="timers.length" class="grid grid-cols-4 md:grid-cols-6 gap-4">
       <Card v-for="timer in timers" :key="timer.id">
         <template #title>
           <InputText
@@ -32,7 +40,8 @@ const formatTime = (time?: number | string) => {
           <p v-if="timer.end" class="m-0">Время окончания:{{ formatTime(timer.end) }}</p>
         </template>
       </Card>
-    </template>
+    </div>
+    <StickyTimer />
   </div>
 </template>
 <style scoped>

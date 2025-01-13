@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 interface ITimer {
   id: number
@@ -59,5 +59,9 @@ export function useTimerStore() {
     // send deleteTime to server
   }
 
-  return { activeTimeEntry, timers, startTimer, pauseTimer, stopTimer }
+  const currentTimer = computed(() => {
+    return timers.value[0]
+  })
+
+  return { currentTimer, activeTimeEntry, timers, startTimer, pauseTimer, stopTimer }
 }
