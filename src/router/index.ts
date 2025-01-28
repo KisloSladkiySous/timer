@@ -10,6 +10,10 @@ const router = createRouter({
       component: DashboardView,
     },
     {
+      path: '/timer',
+      component: () => import('@/modules/timer/views/TimersView.vue'),
+    },
+    {
       path: '/:pathMatch(.*)*',
       component: () => import('@/core/views/PageNotFound.vue'),
     },
