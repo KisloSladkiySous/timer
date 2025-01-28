@@ -8,7 +8,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <button class="relative w-8 h-8">
+  <button class="relative w-8 h-8 hover:scale-110 transform transition-all duration-300">
     <div class="relative z-10">
       <div
         v-if="props.active"
