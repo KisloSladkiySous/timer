@@ -12,6 +12,7 @@
     "target": "es2016",
     "lib": ["es2017"],
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "types": ["unplugin-icons/types/vue"]
   }
 }
