@@ -3,7 +3,7 @@ import { ref, watch } from 'vue'
 
 import { useTimerStore } from '@/modules/timer/store/useTimerStore'
 import PlayButton from './PlayButton.vue'
-const { activeTimeEntry, startTimer, currentTimer } = useTimerStore()
+const { duration, isActive, toggleTimer, currentTimer } = useTimerStore()
 
 import NumberFlow, { NumberFlowGroup } from '@number-flow/vue'
 
@@ -18,16 +18,15 @@ const getTimeFormatted = (duration: number) => {
 }
 
 watch(
-  () => activeTimeEntry.value.duration,
+  () => duration.value,
   (duration) => {
     getTimeFormatted(duration)
-  },
-  { deep: true },
+  }
 )
 
 const start = () => {
-  startTimer()
-  getTimeFormatted(activeTimeEntry.value.duration)
+  toggleTimer()
+  getTimeFormatted(duration.value)
 }
 </script>
 
@@ -59,7 +58,7 @@ const start = () => {
         </div>
       </NumberFlowGroup>
       <!-- <span v-if="time">{{ time }}</span> -->
-      <PlayButton :active="!!activeTimeEntry.interval" @click="start" />
+      <PlayButton :active="!!isActive" @click="start" />
     </div>
   </div>
 </template>

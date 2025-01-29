@@ -5,14 +5,13 @@ import Button from 'primevue/button'
 import InputMask from 'primevue/inputmask'
 
 import { useTimerStore } from '@/modules/timer/store/useTimerStore'
-const { activeTimeEntry, stopTimer, startTimer } = useTimerStore()
+const { duration, isActive, stopTimer, toggleTimer } = useTimerStore()
 
 watch(
-  () => activeTimeEntry.value.duration,
+  () => duration.value,
   (duration) => {
     getTimeFormatted(duration)
   },
-  { deep: true },
 )
 const time = ref()
 const getTimeFormatted = (duration: number) => {
@@ -30,7 +29,7 @@ const getTimeFormatted = (duration: number) => {
     </template>
     <template #content>
       <div class="flex justify-between">
-        <Button :label="activeTimeEntry.interval ? 'Pause' : 'Start'" @click="startTimer()" />
+        <Button :label="isActive ? 'Pause' : 'Start'" @click="toggleTimer()" />
         <Button label="Stop" @click="stopTimer()" />
       </div>
     </template>

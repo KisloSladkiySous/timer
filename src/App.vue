@@ -3,20 +3,6 @@ import StickyTimer from './modules/timer/components/StickyTimer.vue'
 import SideBar from './modules/sidebar/components/SideBar.vue'
 
 import { RouterView } from 'vue-router'
-
-// const session = ref()
-
-// onMounted(() => {
-//   supabase.auth.getSession().then(({ data }) => {
-//     session.value = data.session
-//   })
-
-//   supabase.auth.onAuthStateChange((_, _session) => {
-//     session.value = _session
-//   })
-
-//   console.log(session.value)
-// })
 </script>
 
 <template>

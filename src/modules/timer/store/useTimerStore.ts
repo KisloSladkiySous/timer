@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 
 interface ITimer {
   id: number
@@ -17,53 +17,80 @@ const timerBlueprint: ITimer = {
   end: 0,
 }
 
-const activeTimeEntry = ref<{
-  interval: number | null
-  duration: number
-}>({
-  interval: null,
-  duration: 0,
+const isActive = ref(false)
+const duration = ref()
+
+const worker = ref<Worker | null>(null)
+
+// Handle start/stop commands
+watch(isActive, (newIsActive) => {
+  if (newIsActive) {
+    worker.value?.postMessage({
+      cmd: 'start',
+      duration: duration.value,
+    })
+
+    if (duration.value) return
+    const newTimer = Object.create(timerBlueprint)
+    newTimer.id = timers.value.length + 1
+    newTimer.start = Date.now()
+    newTimer.title = `Таймер ${newTimer.id}`
+    timers.value.unshift(newTimer)
+  } else {
+    worker.value?.postMessage({ cmd: 'stop' })
+  }
 })
 
 export function useTimerStore() {
-  const startTimer = () => {
-    if (activeTimeEntry.value.interval) {
-      pauseTimer()
-      return
+  onMounted(() => {
+    window.addEventListener('beforeunload', onWindowClose)
+    if (worker.value) return
+
+    worker.value = new Worker(new URL('../utils/timer.worker.js', import.meta.url))
+    worker.value.onmessage = (e) => {
+      duration.value = e.data
     }
 
-    if (!activeTimeEntry.value.duration) {
-      const newTimer = Object.create(timerBlueprint)
-      newTimer.id = timers.value.length + 1
-      newTimer.start = Date.now()
-      newTimer.title = `Таймер ${newTimer.id}`
-      timers.value.unshift(newTimer)
+    // Resume timer if persisted state exists
+    if (!isActive.value) {
+      duration.value = Number(localStorage.getItem('timerDuration'))
     }
+  })
 
-    // send startTime to server
-
-    activeTimeEntry.value.interval = setInterval(() => {
-      activeTimeEntry.value.duration += 1
-    }, 1_000)
+  const onWindowClose = () => {
+    worker.value?.terminate()
+    if (isActive.value) {
+      localStorage.setItem('timerDuration', duration.value.toString())
+    }
   }
 
-  const pauseTimer = () => {
-    clearInterval(activeTimeEntry.value.interval!)
-    activeTimeEntry.value.interval = null
+  const toggleTimer = () => {
+    isActive.value = !isActive.value
+    // send startTime to server
   }
 
   const stopTimer = () => {
-    clearInterval(activeTimeEntry.value.interval!)
-    activeTimeEntry.value.interval = null
-    activeTimeEntry.value.duration = 0
+    worker.value?.postMessage({ cmd: 'stop' })
+    localStorage.removeItem('timerDuration')
+
+    isActive.value = false
+    duration.value = 0
     timers.value[0].end = Date.now()
     // send deleteTime to server
   }
 
   const currentTimer = computed(() => {
-    if (activeTimeEntry.value.duration || activeTimeEntry.value.interval) return timers.value[0]
+    if (duration.value || isActive.value) return timers.value[0]
     return null
   })
 
-  return { currentTimer, activeTimeEntry, timers, startTimer, pauseTimer, stopTimer }
+  return {
+    currentTimer,
+    duration,
+    isActive,
+    timers,
+    toggleTimer,
+    stopTimer,
+    worker,
+  }
 }
