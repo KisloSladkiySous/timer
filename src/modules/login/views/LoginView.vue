@@ -1,31 +1,28 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { supabase } from '@/supabase'
+import { useAuth } from '@/modules/login/composables/useAuth'
 
-// const form = ref({
-//   email: null,
-//   password: null,
-// })
+import Button from 'primevue/button'
 
-const loading = ref(false)
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 const email = ref('')
+const password = ref('')
+
+const { signIn, signOut } = useAuth()
 
 const handleLogin = async (e: Event) => {
   e.preventDefault()
-  try {
-    loading.value = true
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.value,
-    })
-    if (error) throw error
-    alert('Check your email for the login link!')
-  } catch (error) {
-    if (error instanceof Error) {
-      alert(error.message)
-    }
-  } finally {
-    loading.value = false
-  }
+  await signIn(email.value, password.value).then(() => {
+    router.push('/')
+  })
+}
+
+const handleSignOut = async (e: Event) => {
+  e.preventDefault()
+  await signOut().then(() => {})
 }
 </script>
 <template>
@@ -41,18 +38,21 @@ const handleLogin = async (e: Event) => {
           class="w-full rounded-lg border-zinc-800 border p-2"
         />
       </div>
-      <!-- <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-2">
         <label for="password" class="text-zinc-400">Password</label>
         <input
           type="password"
-          v-model="form.password"
+          v-model="password"
           id="password"
           class="w-full rounded-lg border-zinc-800 border p-2"
         />
-      </div> -->
+      </div>
       <div class="flex justify-between">
-        <button class="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600">Войти</button>
+        <Button type="submit">Войти</Button>
       </div>
     </form>
+  </div>
+  <div>
+    <Button @click="handleSignOut">Выйти</Button>
   </div>
 </template>

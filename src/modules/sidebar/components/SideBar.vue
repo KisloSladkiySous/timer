@@ -7,8 +7,8 @@ import SideBarItem from '@/modules/sidebar/components/SideBarItem.vue'
 import SideBarUser from '@/modules/sidebar/components/SideBarUser.vue'
 </script>
 <template>
-  <div class="h-screen w-80">
-    <div class="flex flex-col justify-between h-full p-4 pr-0">
+  <div class="h-screen p-4 pr-0">
+    <div class="w-64 flex flex-col justify-between h-full">
       <!-- <Logo /> -->
       <div class="flex flex-col gap-2 mt-4 rounded-xl p-1">
         <SideBarItem title="Дашборд" to="/">
